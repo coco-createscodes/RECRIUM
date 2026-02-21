@@ -350,14 +350,79 @@ export default function ShopMale() {
         <button className="filter-btn">New In</button>
       </div>
 
-      <div className="lookbook">
-        {[...Array(9)].map((_, i) => (
-          <div key={i} className="look-item look-placeholder">
-            <div className="ph-icon">+</div>
-            <div className="ph-text">Add Product Image</div>
-          </div>
-        ))}
-      </div>
+   <div className="lookbook">
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product1-front.jpg" alt="Product 1"
+      onMouseEnter={e => e.target.src='/images/starboyfront.png'}
+      onMouseLeave={e => e.target.src='/images/starboyback.png'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product2-front.jpg" alt="Product 2"
+      onMouseEnter={e => e.target.src='/images/product2-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product2-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product3-front.jpg" alt="Product 3"
+      onMouseEnter={e => e.target.src='/images/product3-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product3-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product4-front.jpg" alt="Product 4"
+      onMouseEnter={e => e.target.src='/images/product4-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product4-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product5-front.jpg" alt="Product 5"
+      onMouseEnter={e => e.target.src='/images/product5-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product5-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product6-front.jpg" alt="Product 6"
+      onMouseEnter={e => e.target.src='/images/product6-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product6-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product7-front.jpg" alt="Product 7"
+      onMouseEnter={e => e.target.src='/images/product7-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product7-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product8-front.jpg" alt="Product 8"
+      onMouseEnter={e => e.target.src='/images/product8-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product8-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+
+  <div className="look-item" onClick={() => window.location.href='#'}>
+    <img src="/images/product9-front.jpg" alt="Product 9"
+      onMouseEnter={e => e.target.src='/images/product9-back.jpg'}
+      onMouseLeave={e => e.target.src='/images/product9-front.jpg'}
+    />
+    <div className="look-overlay"><span className="look-view">View</span></div>
+  </div>
+</div>
 
       <footer>
         <span>© 2025 Recrium</span>

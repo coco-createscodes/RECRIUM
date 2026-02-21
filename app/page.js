@@ -4,12 +4,9 @@ import { useEffect } from 'react';
 
 export default function Home() {
   useEffect(() => {
-    // Hide loader once fonts/page ready
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('loader').classList.add('hide');
-      }, 1800);
-    });
+   setTimeout(() => {
+  document.getElementById('loader').classList.add('hide');
+}, 1800);
 
     // Parallax-ish: logo drifts slightly on scroll within hero
     const logoWrap = document.querySelector('.logo-wrap');

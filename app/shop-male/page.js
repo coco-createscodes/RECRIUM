@@ -352,10 +352,10 @@ export default function ShopMale() {
 
    <div className="lookbook">
   <div className="look-item" onClick={() => window.location.href='#'}>
-    <img src="/images/product1-front.jpg" alt="Product 1"
-      onMouseEnter={e => e.target.src='/images/starboyfront.png'}
-      onMouseLeave={e => e.target.src='/images/starboyback.png'}
-    />
+    <img src="/images/starboyfront.png" alt="Product 1"
+      onMouseEnter={e => e.target.src='/images/starboyback.png'}
+      onMouseLeave={e => e.target.src='/images/starboyfront.png'}
+   />
     <div className="look-overlay"><span className="look-view">View</span></div>
   </div>
 

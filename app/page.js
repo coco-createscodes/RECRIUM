@@ -28,7 +28,7 @@ export default function Home() {
           --cream: #f5f0e8;
           --black: #0a0a0a;
           --gold: #4a4a4a;
-          --gold-light: #e8d5b0;
+          --gold-light: #8a8a8a;
           --white: #ffffff;
         }
 

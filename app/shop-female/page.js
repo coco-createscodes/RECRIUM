@@ -186,39 +186,6 @@ export default function ShopFemale() {
           margin-top: 0.8rem;
         }
 
-        .filter-bar {
-          display: flex;
-          gap: 2rem;
-          padding: 1.5rem 3rem;
-          border-bottom: 1px solid rgba(201,169,110,0.1);
-          overflow-x: auto;
-          scrollbar-width: none;
-        }
-        .filter-bar::-webkit-scrollbar { display: none; }
-
-        .filter-btn {
-          font-size: 0.6rem;
-          letter-spacing: 0.35em;
-          text-transform: uppercase;
-          color: var(--dim);
-          background: none;
-          border: none;
-          cursor: none;
-          padding: 0.3rem 0;
-          position: relative;
-          white-space: nowrap;
-          transition: color 0.3s;
-        }
-        .filter-btn::after {
-          content: '';
-          position: absolute;
-          bottom: 0; left: 0;
-          width: 0; height: 1px;
-          background: var(--gold);
-          transition: width 0.3s;
-        }
-        .filter-btn.active, .filter-btn:hover { color: var(--gold); }
-        .filter-btn.active::after, .filter-btn:hover::after { width: 100%; }
 
         .lookbook { padding: 3rem; }
 
@@ -373,16 +340,6 @@ export default function ShopFemale() {
         </div>
       </div>
 
-      <div className="filter-bar">
-        <button className="filter-btn active">All</button>
-        <button className="filter-btn">Tops</button>
-        <button className="filter-btn">Bottoms</button>
-        <button className="filter-btn">Dresses</button>
-        <button className="filter-btn">Outerwear</button>
-        <button className="filter-btn">Footwear</button>
-        <button className="filter-btn">Accessories</button>
-        <button className="filter-btn">New In</button>
-      </div>
 
       <div className="lookbook">
         <div className="look-feature look-placeholder wide">

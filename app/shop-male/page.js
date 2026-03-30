@@ -58,7 +58,7 @@ export default function ShopMale() {
 
         :root {
           --black: #0a0a0a;
-          --gold: #c9a96e;
+          --gold: #4a4a4a;
           --gold-light: #e8d5b0;
           --white: #ffffff;
           --dim: rgba(255,255,255,0.35);

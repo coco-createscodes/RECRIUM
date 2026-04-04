@@ -17,6 +17,12 @@ export default function Home() {
       logoWrap.style.transform = `translateY(${-progress * 80}px)`;
       logoWrap.style.opacity = 1 - progress * 1.6;
     });
+   // toggle light/dark mode
+    const toggle = document.getElementById('theme-toggle');
+    toggle.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+     });
+
   }, []);
 
   return (
@@ -40,6 +46,31 @@ export default function Home() {
           font-family: 'Montserrat', sans-serif;
           font-weight: 200;
           overflow-x: hidden;
+        }
+
+        body.light-mode {
+         background: #f5f5f5;
+         color: #0a0a0a;
+        }
+
+        .theme-toggle {
+          position: fixed;
+          bottom: 2rem;
+          right: 2rem;
+          z-index: 999;
+          background: none;
+          border: 1px solid rgba(255,255,255,0.3);
+          color: white;
+          padding: 0.5rem 1rem;
+          font-size: 0.6rem;
+          letter-spacing: 0.3em;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+
+        body.light-mode .theme-toggle {
+          border-color: rgba(0,0,0,0.3);
+          color: #0a0a0a;
         }
 
         .hero {
@@ -327,8 +358,8 @@ export default function Home() {
           pointer-events: none;
         }
 
-        .corner-deco.tl { top: 2rem; left: 2rem; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
-        .corner-deco.br { bottom: 2rem; right: 2rem; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+        .corner-deco.tl { top: 2rem; left: 2rem; border-top: 1px solid rgba(255,255,255,0.3); border-left: 1px solid rgba(255,255,255,0.3); }
+        .corner-deco.br { bottom: 2rem; right: 2rem; border-bottom: 1px solid rgba(255,255,255,0.3); border-right: 1px solid rgba(255,255,255,0.3); }
 
         .shop-side::after {
           content: '';
@@ -465,6 +496,12 @@ export default function Home() {
         </a>
 
       </section>
+
+      <button className='theme-toggle' id='theme-toggle'>
+        Light / Dark
+      </button>
+
+      
     </>
   );
 }

@@ -415,7 +415,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero" id="hero">
         <div style={{position:'absolute', top:'1.5rem', left:'2rem', zIndex:20}}>
-          <img src="/images/goldlogo.png" alt="Recrium" style={{width:'80px', height:'auto'}} />
+          <img src="/images/silverlogo.png" alt="Recrium" style={{width:'80px', height:'auto'}} />
         </div>
         <div className="hero-glow"></div>
         <div className="hero-lines"></div>

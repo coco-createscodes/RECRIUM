@@ -332,7 +332,7 @@ export default function ShopFemale() {
       </nav>
 
       <div className="page-hero">
-        <img src="/images/goldlogo.png" alt="Recrium" style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'min(500px, 60vw)', opacity:0.06, zIndex:1}} />
+        <img src="/images/silverlogo.png" alt="Recrium" style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'min(500px, 60vw)', opacity:0.06, zIndex:1}} />
         <div className="hero-watermark">Femme</div>
         <div className="page-hero-content">
           <div className="page-title">FEMALE</div>

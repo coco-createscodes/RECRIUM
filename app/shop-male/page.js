@@ -1,11 +1,17 @@
 ﻿'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
-export default function ShopMale() {
+export default function ShopFemale() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') !== 'light';
+    }
+    return true;
+  });
 
   useEffect(() => {
     const cursor = cursorRef.current;
@@ -29,7 +35,7 @@ export default function ShopMale() {
       animId = requestAnimationFrame(animateRing);
     })();
 
-    const expandEls = document.querySelectorAll('.look-item, a, button');
+    const expandEls = document.querySelectorAll('.look-item, .look-feature, a, button');
     const onEnter = () => ring.classList.add('expand');
     const onLeave = () => ring.classList.remove('expand');
     expandEls.forEach(el => {
@@ -52,7 +58,11 @@ export default function ShopMale() {
   }, []);
 
   return (
-    <>
+    <div style={{
+      background: darkMode ? '#0a0a0a' : '#f5f0e8',
+      color: darkMode ? '#ffffff' : '#0a0a0a',
+      minHeight: '100vh',
+    }}>
       <style>{`
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -69,6 +79,7 @@ export default function ShopMale() {
         body {
           background: var(--black);
           color: var(--white);
+          transition: background 0.3s, color 0.3s;
           font-family: 'Montserrat', sans-serif;
           font-weight: 200;
           overflow-x: hidden;
@@ -83,7 +94,6 @@ export default function ShopMale() {
           pointer-events: none;
           z-index: 9999;
           transform: translate(-50%, -50%);
-          transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
           mix-blend-mode: difference;
         }
         .cursor-ring {
@@ -94,7 +104,7 @@ export default function ShopMale() {
           pointer-events: none;
           z-index: 9998;
           transform: translate(-50%, -50%);
-          transition: transform 0.18s ease, width 0.4s, height 0.4s;
+          transition: width 0.4s, height 0.4s, border-color 0.3s;
         }
         .cursor-ring.expand { width: 70px; height: 70px; border-color: var(--gold); }
 
@@ -145,28 +155,27 @@ export default function ShopMale() {
           padding: 3rem 3rem;
           position: relative;
           overflow: hidden;
-          margin-top: 0;
         }
 
         .page-hero::before {
           content: '';
-          position: absolute;
-          inset: 0;
+          position: absolute; inset: 0;
           background: linear-gradient(180deg, transparent 40%, var(--black) 100%);
           z-index: 2;
         }
 
-        .hero-number {
+        .hero-watermark {
           position: absolute;
           top: 50%; left: 50%;
-          transform: translate(-50%, -50%);
-          font-family: 'Bebas Neue', cursive;
-          font-size: clamp(10rem, 25vw, 22rem);
+          transform: translate(-50%, -50%) rotate(-8deg);
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: clamp(6rem, 18vw, 16rem);
           color: rgba(201,169,110,0.04);
-          letter-spacing: -0.02em;
           white-space: nowrap;
           z-index: 1;
           user-select: none;
+          letter-spacing: 0.05em;
         }
 
         .page-hero-content { position: relative; z-index: 3; }
@@ -189,13 +198,45 @@ export default function ShopMale() {
         }
 
 
-        .lookbook {
-          padding: 3rem;
-          columns: 3;
-          column-gap: 1.2rem;
+        .lookbook { padding: 3rem; }
+
+        .look-feature {
+          width: 100%;
+          margin-bottom: 1.2rem;
+          position: relative;
+          overflow: hidden;
+          display: block;
+          text-decoration: none;
+          cursor: none;
         }
-        @media (max-width: 900px) { .lookbook { columns: 2; } }
-        @media (max-width: 540px) { .lookbook { columns: 1; padding: 1.5rem; } }
+        .look-feature img {
+          width: 100%; height: 65vh; object-fit: cover; display: block;
+          transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s;
+          filter: brightness(0.88);
+        }
+        .look-feature:hover img { transform: scale(1.03); filter: brightness(1); }
+        .look-feature .look-overlay {
+          position: absolute; inset: 0;
+          background: linear-gradient(to top, rgba(10,10,10,0.65) 0%, transparent 40%);
+          opacity: 0; transition: opacity 0.5s;
+          display: flex; align-items: flex-end; padding: 2.5rem;
+        }
+        .look-feature:hover .look-overlay { opacity: 1; }
+        .look-feature::before {
+          content: ''; position: absolute; top: 0; left: 0;
+          width: 0; height: 0;
+          border-top: 2px solid var(--gold); border-left: 2px solid var(--gold);
+          transition: width 0.4s, height 0.4s; z-index: 5;
+        }
+        .look-feature:hover::before { width: 40px; height: 40px; }
+
+        .lookbook-grid { columns: 3; column-gap: 1.2rem; }
+        @media (max-width: 900px) { .lookbook-grid { columns: 2; } }
+        @media (max-width: 540px) {
+          .lookbook-grid { columns: 1; }
+          .lookbook { padding: 1.5rem; }
+          .look-feature img { height: 50vh; }
+        }
 
         .look-item {
           break-inside: avoid;
@@ -206,15 +247,15 @@ export default function ShopMale() {
           display: block;
           text-decoration: none;
         }
-        .look-item:nth-child(3n+2) { margin-top: 3rem; }
-        .look-item:nth-child(3n+3) { margin-top: -1.5rem; }
+        .look-item:nth-child(3n+2) { margin-top: 4rem; }
+        .look-item:nth-child(3n+3) { margin-top: -2rem; }
 
         .look-item img {
           width: 100%; height: auto; display: block;
           transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s;
-          filter: brightness(0.92);
+          filter: brightness(0.9);
         }
-        .look-item:hover img { transform: scale(1.04); filter: brightness(1.05); }
+        .look-item:hover img { transform: scale(1.05); filter: brightness(1.05); }
 
         .look-overlay {
           position: absolute; inset: 0;
@@ -246,25 +287,27 @@ export default function ShopMale() {
           display: flex; align-items: center; justify-content: center;
           flex-direction: column; gap: 0.8rem;
         }
+        .look-placeholder.wide { aspect-ratio: 16/7; }
+
         .ph-icon { font-size: 2rem; opacity: 0.15; }
         .ph-text {
           font-size: 0.55rem; letter-spacing: 0.3em;
           text-transform: uppercase; color: rgba(255,255,255,0.2);
         }
 
-        .lookbook .look-item {
+        .look-item, .look-feature {
           opacity: 0; transform: translateY(30px);
           animation: itemReveal 0.7s ease forwards;
         }
-        .look-item:nth-child(1)  { animation-delay: 0.05s; }
-        .look-item:nth-child(2)  { animation-delay: 0.12s; }
-        .look-item:nth-child(3)  { animation-delay: 0.19s; }
-        .look-item:nth-child(4)  { animation-delay: 0.26s; }
-        .look-item:nth-child(5)  { animation-delay: 0.33s; }
-        .look-item:nth-child(6)  { animation-delay: 0.40s; }
-        .look-item:nth-child(7)  { animation-delay: 0.47s; }
-        .look-item:nth-child(8)  { animation-delay: 0.54s; }
-        .look-item:nth-child(9)  { animation-delay: 0.61s; }
+        .look-feature       { animation-delay: 0.05s; }
+        .look-item:nth-child(1) { animation-delay: 0.12s; }
+        .look-item:nth-child(2) { animation-delay: 0.19s; }
+        .look-item:nth-child(3) { animation-delay: 0.26s; }
+        .look-item:nth-child(4) { animation-delay: 0.33s; }
+        .look-item:nth-child(5) { animation-delay: 0.40s; }
+        .look-item:nth-child(6) { animation-delay: 0.47s; }
+        .look-item:nth-child(7) { animation-delay: 0.54s; }
+        .look-item:nth-child(8) { animation-delay: 0.61s; }
 
         @keyframes itemReveal { to { opacity: 1; transform: translateY(0); } }
 
@@ -296,40 +339,55 @@ export default function ShopMale() {
         <div className="nav-logo">
           <img src="/images/rworded.png" width="100" height="70" alt="Recrium" />
         </div>
-        <span className="nav-section-label">Men</span>
+        <span className="nav-section-label">Women</span>
       </nav>
 
       <div className="page-hero">
         <img src="/images/silverlogo.png" alt="Recrium" style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'min(500px, 60vw)', opacity:0.06, zIndex:1}} />
+        <div className="hero-watermark">Femme</div>
         <div className="page-hero-content">
-          <div className="page-title">MALE</div>
+          <div className="page-title">FEMALE</div>
           <div className="page-subtitle">Current Collection</div>
         </div>
       </div>
 
 
-   
-<div className="lookbook">
-  <div className="look-item" onClick={() => window.location.href='#'}>
-    <img src="/images/starboyfront.png" alt="Product 1"
-      onMouseEnter={e => e.target.src='/images/starboyback.png'}
-      onMouseLeave={e => e.target.src='/images/starboyfront.png'}
-    />
-    <div className="look-overlay"><span className="look-view">View</span></div>
-  </div>
+      <div className="lookbook">
+        <div className="look-feature look-placeholder wide">
+          <div className="ph-icon">+</div>
+          <div className="ph-text">Add Featured Product Image</div>
+        </div>
 
-  {[...Array(8)].map((_, i) => (
-    <div key={i} className="look-item look-placeholder">
-      <div className="ph-icon">+</div>
-      <div className="ph-text">Add Product Image</div>
-    </div>
-  ))}
-</div>
+        <div className="lookbook-grid">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="look-item look-placeholder">
+              <div className="ph-icon">+</div>
+              <div className="ph-text">Add Product Image</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={() => {
+          const next = !darkMode;
+          setDarkMode(next);
+          localStorage.setItem('theme', next ? 'dark' : 'light');
+        }}
+        style={{
+          position: 'fixed', top: '1.5rem', right: '2rem',
+          zIndex: 1000, background: 'none', border: 'none',
+          cursor: 'pointer', fontSize: '1.5rem',
+          transform: 'rotate(180deg)', padding: 0,
+        }}
+      >
+        {darkMode ? '💡' : '🔦'}
+      </button>
 
       <footer>
         <span>© 2025 Recrium</span>
-        <Link href="/shop-female" className="footer-switch">Switch to Women →</Link>
+        <Link href="/shop-male" className="footer-switch">Switch to Men →</Link>
       </footer>
-    </>
+    </div>
   );
 }

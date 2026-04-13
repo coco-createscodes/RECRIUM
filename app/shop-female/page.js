@@ -1,11 +1,17 @@
 ﻿'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 
 export default function ShopFemale() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') !== 'light';
+    }
+    return true;
+  });
 
   useEffect(() => {
     const cursor = cursorRef.current;
@@ -52,7 +58,11 @@ export default function ShopFemale() {
   }, []);
 
   return (
-    <>
+    <div style={{
+      background: darkMode ? '#0a0a0a' : '#f5f0e8',
+      color: darkMode ? '#ffffff' : '#0a0a0a',
+      minHeight: '100vh',
+    }}>
       <style>{`
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -357,10 +367,26 @@ export default function ShopFemale() {
         </div>
       </div>
 
+      <button
+        onClick={() => {
+          const next = !darkMode;
+          setDarkMode(next);
+          localStorage.setItem('theme', next ? 'dark' : 'light');
+        }}
+        style={{
+          position: 'fixed', top: '1.5rem', right: '2rem',
+          zIndex: 1000, background: 'none', border: 'none',
+          cursor: 'pointer', fontSize: '1.5rem',
+          transform: 'rotate(180deg)', padding: 0,
+        }}
+      >
+        {darkMode ? '💡' : '🔦'}
+      </button>
+
       <footer>
         <span>© 2025 Recrium</span>
         <Link href="/shop-male" className="footer-switch">Switch to Men →</Link>
       </footer>
-    </>
+    </div>
   );
 }

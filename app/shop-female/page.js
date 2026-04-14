@@ -2,18 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export default function ShopFemale() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') !== 'light';
-    }
-    return true;
-  });
+  const [darkMode, setDarkMode] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') setDarkMode(false);
+    setMounted(true);
     const cursor = cursorRef.current;
     const ring = ringRef.current;
     let mx = 0, my = 0, rx = 0, ry = 0;
@@ -28,6 +29,7 @@ export default function ShopFemale() {
 
     let animId;
     (function animateRing() {
+      if (!ring) return;
       rx += (mx - rx) * 0.12;
       ry += (my - ry) * 0.12;
       ring.style.left = rx + 'px';
@@ -57,28 +59,25 @@ export default function ShopFemale() {
     };
   }, []);
 
-  return (
+   if (!mounted) return null;
+   
+   return (
+    
     <div style={{
-      background: darkMode ? '#0a0a0a' : '#f5f0e8',
-      color: darkMode ? '#ffffff' : '#0a0a0a',
-      minHeight: '100vh',
-    }}>
-      <style>{`
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+       background: darkMode ? '#0a0a0a' : '#f5f0e8',
+       color: darkMode ? '#ffffff' : '#0a0a0a',
+       minHeight: '100vh',
+       cursor: 'none',
 
-        :root {
-          --black: #0a0a0a;
-          --gold: #4a4a4a;
-          --gold-light: #8a8a8a;
-          --white: #ffffff;
-          --dim: rgba(255,255,255,0.35);
-        }
+        }}>
+      <style>{`
+      :root { --bg: ${darkMode ? '#0a0a0a' : '#f5f0e8'}; }
 
         html { scroll-behavior: smooth; }
 
         body {
-          background: var(--black);
-          color: var(--white);
+          background: transparent;
+          color: inherit;
           font-family: 'Montserrat', sans-serif;
           font-weight: 200;
           overflow-x: hidden;
@@ -86,15 +85,15 @@ export default function ShopFemale() {
         }
 
         .cursor {
-          position: fixed;
-          width: 10px; height: 10px;
-          background: var(--gold);
-          border-radius: 50%;
-          pointer-events: none;
-          z-index: 9999;
-          transform: translate(-50%, -50%);
-          mix-blend-mode: difference;
-        }
+  position: fixed;
+  width: 10px; height: 10px;
+  background: #ffffff;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+
         .cursor-ring {
           position: fixed;
           width: 36px; height: 36px;
@@ -158,8 +157,9 @@ export default function ShopFemale() {
 
         .page-hero::before {
           content: '';
-          position: absolute; inset: 0;
-          background: linear-gradient(180deg, transparent 40%, var(--black) 100%);
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 40%, var(--bg) 100%);
           z-index: 2;
         }
 
@@ -333,13 +333,7 @@ export default function ShopFemale() {
       <div className="cursor" ref={cursorRef}></div>
       <div className="cursor-ring" ref={ringRef}></div>
 
-      <nav>
-        <Link href="/" className="nav-back">Back</Link>
-        <div className="nav-logo">
-          <img src="/images/rworded.png" width="100" height="70" alt="Recrium" />
-        </div>
-        <span className="nav-section-label">Women</span>
-      </nav>
+      <Navbar section="Women" darkMode={darkMode} />
 
       <div className="page-hero">
         <img src="/images/silverlogo.png" alt="Recrium" style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'min(500px, 60vw)', opacity:0.06, zIndex:1}} />
@@ -383,10 +377,7 @@ export default function ShopFemale() {
         {darkMode ? '💡' : '🔦'}
       </button>
 
-      <footer>
-        <span>© 2025 Recrium</span>
-        <Link href="/shop-male" className="footer-switch">Switch to Men →</Link>
-      </footer>
+      <Footer switchLink="/shop-male" switchLabel="Switch to Men →" darkMode={darkMode} />
     </div>
   );
 }

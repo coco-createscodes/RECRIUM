@@ -50,16 +50,8 @@ export default function Home() {
   const theme = darkMode ? dark : light;
 
   return (
-    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh' }}>
+    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh', cursor: 'none', }}>
       <style>{`
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-          --black: #0a0a0a;
-          --grey: #4a4a4a;
-          --grey-light: #8a8a8a;
-          --white: #ffffff;
-        }
 
         html { scroll-behavior: smooth; }
 

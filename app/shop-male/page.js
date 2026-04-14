@@ -1,19 +1,21 @@
 ﻿'use client';
  
+import Navbar from '../components/Navbar';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Footer from '../components/Footer';
+
  
 export default function ShopMale() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
-  const [darkMode, setDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') !== 'light';
-    }
-    return true;
-  });
+  const [darkMode, setDarkMode] = useState(true);
+  const [mounted, setMounted] = useState(false);
  
   useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') setDarkMode(false);
+    setMounted(true);
     const cursor = cursorRef.current;
     const ring = ringRef.current;
     let mx = 0, my = 0, rx = 0, ry = 0;
@@ -27,13 +29,15 @@ export default function ShopMale() {
     document.addEventListener('mousemove', onMouseMove);
  
     let animId;
+
     (function animateRing() {
-      rx += (mx - rx) * 0.12;
-      ry += (my - ry) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top = ry + 'px';
-      animId = requestAnimationFrame(animateRing);
-    })();
+       if (!ring) return;
+       rx += (mx - rx) * 0.12;
+       ry += (my - ry) * 0.12;
+       ring.style.left = rx + 'px';
+       ring.style.top = ry + 'px';
+       animId = requestAnimationFrame(animateRing);
+   })();
  
     const expandEls = document.querySelectorAll('.look-item, a, button');
     const onEnter = () => ring.classList.add('expand');
@@ -57,13 +61,14 @@ export default function ShopMale() {
     footerText: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)',
     dim: darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)',
   };
- 
+
+  if (!mounted) return null;
+
   return (
-    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh' }}>
+    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh', cursor: 'none', }}>
       <style>{`
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: 'Montserrat', sans-serif; font-weight: 200; overflow-x: hidden; cursor: none; }
+  
  
         .cursor {
           position: fixed; width: 10px; height: 10px; background: #4a4a4a;
@@ -175,32 +180,11 @@ export default function ShopMale() {
         {darkMode ? '💡' : '🔦'}
       </button>
  
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '1.8rem 3rem', background: theme.navBg,
-      }}>
-        <Link href="/" style={{
-          fontSize: '0.6rem', letterSpacing: '0.35em', textTransform: 'uppercase',
-          color: theme.dim, textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.6rem'
-        }}>
-          ← Back
-        </Link>
-        <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-          <img src="/images/rworded.png" width="100" height="70" alt="Recrium"
-            style={{ filter: darkMode ? 'none' : 'invert(1)' }} />
-        </div>
-        <span style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic', fontSize: '1rem', color: '#4a4a4a', letterSpacing: '0.2em' }}>
-          Men
-        </span>
-      </nav>
- 
+       <Navbar section="Men" darkMode={darkMode} />
+
       <div className="page-hero">
-        <img src="/images/silverlogo.png" alt="Recrium" style={{
-          position: 'absolute', top: '50%', left: '50%',
-          transform: 'translate(-50%,-50%)', width: 'min(500px, 60vw)',
-          opacity: 0.06, zIndex: 1, filter: darkMode ? 'none' : 'invert(1)'
-        }} />
+        <img src="/images/silverlogo.png" alt="Recrium" style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'min(500px, 60vw)', opacity:0.06, zIndex:1}} />
+        
         <div className="page-hero-content">
           <div className="page-title">MALE</div>
           <div className="page-subtitle">Current Collection</div>
@@ -208,14 +192,8 @@ export default function ShopMale() {
       </div>
  
       <div className="lookbook">
-        <div className="look-item" onClick={() => window.location.href='#'}>
-          <img src="/images/starboyfront.png" alt="Product 1"
-            onMouseEnter={e => e.target.src='/images/starboyback.png'}
-            onMouseLeave={e => e.target.src='/images/starboyfront.png'}
-          />
-          <div className="look-overlay"><span className="look-view">View</span></div>
-        </div>
-        {[...Array(8)].map((_, i) => (
+      
+        {[...Array(9)].map((_, i) => (
           <div key={i} className="look-item look-placeholder">
             <div className="ph-icon">+</div>
             <div className="ph-text">Add Product Image</div>
@@ -223,18 +201,7 @@ export default function ShopMale() {
         ))}
       </div>
  
-      <footer style={{
-        marginTop: '4rem', padding: '2rem 3rem',
-        borderTop: `1px solid ${theme.footerBorder}`,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-      }}>
-        <span style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: theme.footerText }}>
-          © 2025 Recrium
-        </span>
-        <Link href="/shop-female" style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: theme.dim, textDecoration: 'none' }}>
-          Switch to Women →
-        </Link>
-      </footer>
+      <Footer switchLink="/shop-female" switchLabel="Switch to Women →" darkMode={darkMode} />
     </div>
   );
 }

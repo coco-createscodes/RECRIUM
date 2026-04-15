@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function ShopFemale() {
   const cursorRef = useRef(null);
@@ -147,7 +148,7 @@ export default function ShopFemale() {
         }
 
         .page-hero {
-          height: 38vh;
+          height: 55vh;
           display: flex;
           align-items: flex-end;
           padding: 3rem 3rem;
@@ -337,7 +338,6 @@ export default function ShopFemale() {
 
       <div className="page-hero">
         <img src="/images/silverlogo.png" alt="Recrium" style={{position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', width:'min(500px, 60vw)', opacity:0.06, zIndex:1}} />
-        <div className="hero-watermark">Femme</div>
         <div className="page-hero-content">
           <div className="page-title">FEMALE</div>
           <div className="page-subtitle">Current Collection</div>
@@ -360,22 +360,7 @@ export default function ShopFemale() {
           ))}
         </div>
       </div>
-
-      <button
-        onClick={() => {
-          const next = !darkMode;
-          setDarkMode(next);
-          localStorage.setItem('theme', next ? 'dark' : 'light');
-        }}
-        style={{
-          position: 'fixed', top: '1.5rem', right: '2rem',
-          zIndex: 1000, background: 'none', border: 'none',
-          cursor: 'pointer', fontSize: '1.5rem',
-          transform: 'rotate(180deg)', padding: 0,
-        }}
-      >
-        {darkMode ? '💡' : '🔦'}
-      </button>
+      <ThemeToggle />
 
       <Footer switchLink="/shop-male" switchLabel="Switch to Men →" darkMode={darkMode} />
     </div>

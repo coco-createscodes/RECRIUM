@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Footer from '../components/Footer';
+import ThemeToggle from '../components/ThemeToggle';
 
  
 export default function ShopMale() {
@@ -84,7 +85,7 @@ export default function ShopMale() {
         .cursor-ring.expand { width: 70px; height: 70px; border-color: #4a4a4a; }
  
         .page-hero {
-          height: 38vh; display: flex; align-items: flex-end;
+          height: 55vh; display: flex; align-items: flex-end;
           padding: 3rem; position: relative; overflow: hidden;
         }
         .page-hero-content { position: relative; z-index: 3; }
@@ -164,21 +165,6 @@ export default function ShopMale() {
       <div className="cursor" ref={cursorRef}></div>
       <div className="cursor-ring" ref={ringRef}></div>
  
-      {/* Bulb toggle */}
-      <button
-        onClick={() => {
-          const next = !darkMode;
-          setDarkMode(next);
-          localStorage.setItem('theme', next ? 'dark' : 'light');
-        }}
-        style={{
-          position: 'fixed', top: '1.5rem', right: '2rem', zIndex: 1000,
-          background: 'none', border: 'none', cursor: 'pointer',
-          fontSize: '1.5rem', transform: 'rotate(180deg)', padding: 0,
-        }}
-      >
-        {darkMode ? '💡' : '🔦'}
-      </button>
  
        <Navbar section="Men" darkMode={darkMode} />
 
@@ -200,6 +186,7 @@ export default function ShopMale() {
           </div>
         ))}
       </div>
+      <ThemeToggle />
  
       <Footer switchLink="/shop-female" switchLabel="Switch to Women →" darkMode={darkMode} />
     </div>

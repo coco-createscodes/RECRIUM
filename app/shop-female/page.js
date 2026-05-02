@@ -18,6 +18,8 @@ export default function ShopFemale() {
     setMounted(true);
     const cursor = cursorRef.current;
     const ring = ringRef.current;
+     if (!cursor || !ring) return;
+  
     let mx = 0, my = 0, rx = 0, ry = 0;
 
     const onMouseMove = (e) => {
@@ -26,7 +28,12 @@ export default function ShopFemale() {
       cursor.style.top = my + 'px';
     };
 
-    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousemove', (e) => {
+  if (!cursor || !ring) return;
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
 
     let animId;
     (function animateRing() {
@@ -360,7 +367,7 @@ export default function ShopFemale() {
           ))}
         </div>
       </div>
-      <ThemeToggle />
+      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
 
       <Footer switchLink="/shop-male" switchLabel="Switch to Men →" darkMode={darkMode} />
     </div>

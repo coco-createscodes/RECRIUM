@@ -27,7 +27,12 @@ export default function ShopMale() {
       cursor.style.top = my + 'px';
     };
  
-    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousemove', (e) => {
+  if (!cursor || !ring) return;
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+});
  
     let animId;
 
@@ -186,7 +191,7 @@ export default function ShopMale() {
           </div>
         ))}
       </div>
-      <ThemeToggle />
+      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
  
       <Footer switchLink="/shop-female" switchLabel="Switch to Women →" darkMode={darkMode} />
     </div>

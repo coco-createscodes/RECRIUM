@@ -1,29 +1,54 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(() => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('theme') !== 'light';
-  }
-  return true;
+  const cursorRef = useRef(null);
+  const ringRef = useRef(null);
+  const [darkMode, setDarkMode] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') setDarkMode(false);
+  setMounted(true);
+
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+  }, 1800);
+
+  const logoWrap = document.querySelector('.logo-wrap');
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const heroH = document.querySelector('.hero').offsetHeight;
+    const progress = Math.min(scrollY / heroH, 1);
+    logoWrap.style.transform = `translateY(${-progress * 80}px)`;
+    logoWrap.style.opacity = 1 - progress * 1.6;
+  });
+
+  const cursor = cursorRef.current;
+  const ring = ringRef.current;
+  if (!cursor || !ring) return;  // ← just return silently, don't crash
+
+  let mx = 0, my = 0, rx = 0, ry = 0;
+ document.addEventListener('mousemove', (e) => {
+  if (!cursor || !ring) return;
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
 });
 
-  useEffect(() => {
-    setTimeout(() => {
-      document.getElementById('loader').classList.add('hide');
-    }, 1800);
+  (function animateRing() {
+    if (!ring) return;
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  })();
+}, []);
 
-    const logoWrap = document.querySelector('.logo-wrap');
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const heroH = document.querySelector('.hero').offsetHeight;
-      const progress = Math.min(scrollY / heroH, 1);
-      logoWrap.style.transform = `translateY(${-progress * 80}px)`;
-      logoWrap.style.opacity = 1 - progress * 1.6;
-    });
-  }, []);
+  if (!mounted) return null;
 
   const dark = {
     bg: '#0a0a0a',
@@ -50,59 +75,47 @@ export default function Home() {
   const theme = darkMode ? dark : light;
 
   return (
-    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh', cursor: 'none', }}>
+    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh', cursor: 'none' }}>
       <style>{`
-
         html { scroll-behavior: smooth; }
+        body { font-family: 'Montserrat', sans-serif; font-weight: 200; overflow-x: hidden; }
 
-        body {
-          font-family: 'Montserrat', sans-serif;
-          font-weight: 200;
-          overflow-x: hidden;
+        .cursor {
+          position: fixed; width: 10px; height: 10px;
+          background: ${darkMode ? '#ffffff' : '#0a0a0a'};
+          border-radius: 50%; pointer-events: none;
+          z-index: 99999; transform: translate(-50%, -50%);
+        }
+        .cursor-ring {
+          position: fixed; width: 36px; height: 36px;
+          border: 1px solid ${darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)'};
+          border-radius: 50%; pointer-events: none;
+          z-index: 99998; transform: translate(-50%, -50%);
         }
 
         .hero {
-          position: relative;
-          height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
+          position: relative; height: 100vh;
+          display: flex; align-items: center;
+          justify-content: center; overflow: hidden;
         }
-
         .hero::before {
-          content: '';
-          position: absolute;
-          inset: 0;
+          content: ''; position: absolute; inset: 0;
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-          pointer-events: none;
-          z-index: 3;
-          opacity: 0.6;
+          pointer-events: none; z-index: 3; opacity: 0.6;
         }
-
         .hero-glow {
-          position: absolute;
-          width: 600px; height: 600px;
-          border-radius: 50%;
+          position: absolute; width: 600px; height: 600px; border-radius: 50%;
           background: radial-gradient(circle, rgba(90,90,90,0.12) 0%, transparent 70%);
-          top: 50%; left: 50%;
-          transform: translate(-50%, -50%);
-          z-index: 1;
-          animation: glowPulse 4s ease-in-out infinite;
+          top: 50%; left: 50%; transform: translate(-50%, -50%);
+          z-index: 1; animation: glowPulse 4s ease-in-out infinite;
         }
-
         @keyframes glowPulse {
           0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
           50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
         }
-
-        .hero-lines {
-          position: absolute; inset: 0;
-          z-index: 2; pointer-events: none;
-        }
+        .hero-lines { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
         .hero-lines::before, .hero-lines::after {
-          content: ''; position: absolute;
-          left: 0; right: 0; height: 1px;
+          content: ''; position: absolute; left: 0; right: 0; height: 1px;
           background: linear-gradient(90deg, transparent, rgba(90,90,90,0.3), transparent);
         }
         .hero-lines::before { top: 30%; }
@@ -113,43 +126,25 @@ export default function Home() {
           animation: logoReveal 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
           opacity: 0; transform: translateY(40px);
         }
-
         @keyframes logoReveal { to { opacity: 1; transform: translateY(0); } }
-
         .logo-img {
-          width: min(850px, 95vw); height: auto; display: block;
-          margin: 0 auto 1.5rem;
+          width: min(850px, 95vw); height: auto; display: block; margin: 0 auto 1.5rem;
           filter: brightness(1.05) drop-shadow(0 0 40px rgba(90,90,90,0.3));
         }
-
-        .logo-text {
-          font-family: 'Bebas Neue', cursive;
-          font-size: clamp(4rem, 14vw, 10rem);
-          letter-spacing: 0.25em; line-height: 1;
-          text-shadow: 0 0 80px rgba(90,90,90,0.4);
-        }
-
         @keyframes fadeIn { to { opacity: 1; } }
 
         .scroll-hint {
           position: absolute; bottom: 2.5rem; left: 50%;
           transform: translateX(-50%); z-index: 10;
           display: flex; flex-direction: column; align-items: center;
-          gap: 0.5rem; opacity: 0;
-          animation: fadeIn 1s 2s ease forwards; cursor: pointer;
+          gap: 0.5rem; opacity: 0; animation: fadeIn 1s 2s ease forwards; cursor: none;
         }
-
-        .scroll-hint span {
-          font-size: 0.6rem; letter-spacing: 0.35em;
-          text-transform: uppercase; color: rgba(128,128,128,0.6);
-        }
-
+        .scroll-hint span { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(128,128,128,0.6); }
         .scroll-arrow {
           width: 1px; height: 50px;
           background: linear-gradient(to bottom, #4a4a4a, transparent);
           animation: scrollLine 2s ease-in-out infinite;
         }
-
         @keyframes scrollLine {
           0% { transform: scaleY(0); transform-origin: top; }
           50% { transform: scaleY(1); transform-origin: top; }
@@ -157,72 +152,49 @@ export default function Home() {
           100% { transform: scaleY(0); transform-origin: bottom; }
         }
 
-        .shop-section {
-          height: 100vh; display: flex;
-          position: relative; overflow: hidden;
-        }
-
+        .shop-section { height: 100vh; display: flex; position: relative; overflow: hidden; }
         .shop-side {
-          position: relative; flex: 1;
-          display: flex; align-items: center; justify-content: center;
-          text-decoration: none; overflow: hidden; cursor: pointer;
-          transition: flex 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+          position: relative; flex: 1; display: flex; align-items: center;
+          justify-content: center; text-decoration: none; overflow: hidden;
+          cursor: none; transition: flex 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         .shop-section:hover .shop-side { flex: 0.5; }
         .shop-section .shop-side:hover { flex: 1.6; }
-
         .side-content { position: relative; z-index: 5; text-align: center; padding: 2rem; }
-
         .side-label {
-          font-family: 'Bebas Neue', cursive;
-          font-size: clamp(3.5rem, 8vw, 7rem);
+          font-family: 'Bebas Neue', cursive; font-size: clamp(3.5rem, 8vw, 7rem);
           letter-spacing: 0.15em; line-height: 1;
           transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s;
         }
-
         .shop-side:hover .side-label { color: #4a4a4a; transform: scale(1.05); }
-
         .side-sub {
           font-family: 'Cormorant Garamond', serif; font-style: italic;
-          font-size: clamp(0.9rem, 1.8vw, 1.2rem);
-          letter-spacing: 0.3em; text-transform: uppercase;
-          margin-top: 0.8rem; transition: color 0.3s, opacity 0.3s;
+          font-size: clamp(0.9rem, 1.8vw, 1.2rem); letter-spacing: 0.3em;
+          text-transform: uppercase; margin-top: 0.8rem; transition: color 0.3s, opacity 0.3s;
         }
-
         .side-cta {
           display: inline-block; margin-top: 2rem; padding: 0.8rem 2.5rem;
           border: 1px solid rgba(90,90,90,0.4); color: #4a4a4a;
           font-family: 'Montserrat', sans-serif; font-weight: 300;
           font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase;
-          text-decoration: none; transition: all 0.4s ease;
-          opacity: 0; transform: translateY(10px);
+          text-decoration: none; transition: all 0.4s ease; opacity: 0; transform: translateY(10px);
         }
-
-        .shop-side:hover .side-cta {
-          opacity: 1; transform: translateY(0);
-          background: rgba(90,90,90,0.1); border-color: #4a4a4a;
-        }
+        .shop-side:hover .side-cta { opacity: 1; transform: translateY(0); background: rgba(90,90,90,0.1); border-color: #4a4a4a; }
 
         .divider-label {
-          position: absolute; top: 50%; left: 50%;
-          transform: translate(-50%, -50%); z-index: 20;
-          width: 80px; height: 80px; border-radius: 50%;
-          border: 1px solid rgba(90,90,90,0.5);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 0.55rem; letter-spacing: 0.2em; color: #4a4a4a;
-          text-transform: uppercase; pointer-events: none; transition: opacity 0.3s;
+          position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          z-index: 20; width: 80px; height: 80px; border-radius: 50%;
+          border: 1px solid rgba(90,90,90,0.5); display: flex; align-items: center;
+          justify-content: center; font-size: 0.55rem; letter-spacing: 0.2em;
+          color: #4a4a4a; text-transform: uppercase; pointer-events: none; transition: opacity 0.3s;
         }
-
         .shop-section:hover .divider-label { opacity: 0; }
 
         .corner-deco { position: absolute; width: 40px; height: 40px; z-index: 6; pointer-events: none; }
         .corner-deco.tl { top: 2rem; left: 2rem; border-top: 1px solid rgba(128,128,128,0.3); border-left: 1px solid rgba(128,128,128,0.3); }
         .corner-deco.br { bottom: 2rem; right: 2rem; border-bottom: 1px solid rgba(128,128,128,0.3); border-right: 1px solid rgba(128,128,128,0.3); }
-
         .shop-side::after {
-          content: ''; position: absolute; top: -100%; left: -60%;
-          width: 40%; height: 300%;
+          content: ''; position: absolute; top: -100%; left: -60%; width: 40%; height: 300%;
           background: linear-gradient(105deg, transparent 40%, rgba(90,90,90,0.06) 50%, transparent 60%);
           transform: rotate(15deg); transition: left 0.9s ease; pointer-events: none;
         }
@@ -235,26 +207,17 @@ export default function Home() {
           transition: opacity 0.6s ease, visibility 0.6s ease;
         }
         #loader.hide { opacity: 0; visibility: hidden; }
-
-        .loader-bar {
-          width: 120px; height: 1px; background: rgba(128,128,128,0.2);
-          position: relative; overflow: hidden;
-        }
+        .loader-bar { width: 120px; height: 1px; background: rgba(128,128,128,0.2); position: relative; overflow: hidden; }
         .loader-bar::after {
-          content: ''; position: absolute; inset: 0;
-          background: #4a4a4a; transform: translateX(-100%);
-          animation: loadBar 1.4s 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          content: ''; position: absolute; inset: 0; background: #4a4a4a;
+          transform: translateX(-100%); animation: loadBar 1.4s 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         @keyframes loadBar { to { transform: translateX(0); } }
 
         .bulb-btn {
-          position: fixed; top: 1.5rem; right: 2rem;
-          z-index: 1000; background: none; border: none;
-          cursor: pointer; font-size: 1.5rem;
-          transform: rotate(180deg);
-          transition: transform 0.3s;
-          line-height: 1;
-          padding: 0;
+          position: fixed; top: 1.5rem; right: 2rem; z-index: 10000;
+          background: none; border: none; cursor: none; font-size: 1.5rem;
+          transform: rotate(180deg); line-height: 1; padding: 0;
         }
 
         @media (max-width: 640px) {
@@ -269,6 +232,10 @@ export default function Home() {
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=Montserrat:wght@200;300;400&display=swap" rel="stylesheet" />
 
+      {/* Cursor */}
+      <div className="cursor" ref={cursorRef}></div>
+      <div className="cursor-ring" ref={ringRef}></div>
+
       {/* Loader */}
       <div id="loader" style={{ background: theme.loaderBg }}>
         <div style={{ opacity: 0, animation: 'fadeIn 0.8s 0.3s ease forwards' }}>
@@ -282,10 +249,10 @@ export default function Home() {
 
       {/* Bulb toggle */}
       <button className="bulb-btn" onClick={() => {
-         const next = !darkMode;
-         setDarkMode(next);
-         localStorage.setItem('theme', next ? 'dark' : 'light');
-        }}>
+        const next = !darkMode;
+        setDarkMode(next);
+        localStorage.setItem('theme', next ? 'dark' : 'light');
+      }}>
         {darkMode ? '💡' : '🔦'}
       </button>
 
@@ -297,7 +264,6 @@ export default function Home() {
         </div>
         <div className="hero-glow"></div>
         <div className="hero-lines"></div>
-
         <div className="logo-wrap">
           <img className="logo-img" src="/images/rworldwide.png" alt="Recrium"
             onError={(e) => { e.target.style.display = 'none'; }}
@@ -305,7 +271,6 @@ export default function Home() {
           />
           <div className="logo-text" style={{ display: 'none', color: theme.text }}>RECRIUM</div>
         </div>
-
         <div className="scroll-hint"
           onClick={() => document.getElementById('shop').scrollIntoView({ behavior: 'smooth' })}>
           <span>Explore</span>
@@ -315,9 +280,7 @@ export default function Home() {
 
       {/* Shop Section */}
       <section className="shop-section" id="shop">
-
-        <a href="/shop-male" className="shop-side"
-          style={{ background: theme.shopMaleBg }}>
+        <a href="/shop-male" className="shop-side" style={{ background: theme.shopMaleBg }}>
           <div className="corner-deco tl"></div>
           <div className="corner-deco br"></div>
           <div className="side-content">
@@ -330,7 +293,7 @@ export default function Home() {
         <div className="divider-label" style={{ background: theme.dividerBg, color: theme.text }}>or</div>
 
         <a href="/shop-female" className="shop-side"
-          style={{ background: theme.shopFemaleBg, borderLeft: `1px solid rgba(90,90,90,0.2)` }}>
+          style={{ background: theme.shopFemaleBg, borderLeft: '1px solid rgba(90,90,90,0.2)' }}>
           <div className="corner-deco tl"></div>
           <div className="corner-deco br"></div>
           <div className="side-content">
@@ -339,7 +302,6 @@ export default function Home() {
             <span className="side-cta">Shop Now</span>
           </div>
         </a>
-
       </section>
     </div>
   );

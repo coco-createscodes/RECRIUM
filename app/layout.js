@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { CartProvider } from "./components/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,17 +15,18 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "RECRIUM",
   description: "RECRIUM TTW",
-   icons: {
+  icons: {
     icon: '/favicon.ico',
   },
 };
-
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <CartProvider>
+          {children}
+        </CartProvider>
       </body>
     </html>
   );

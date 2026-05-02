@@ -25,28 +25,38 @@ useEffect(() => {
     logoWrap.style.transform = `translateY(${-progress * 80}px)`;
     logoWrap.style.opacity = 1 - progress * 1.6;
   });
+}, []);
+
+useEffect(() => {
+  if (!mounted) return;
 
   const cursor = cursorRef.current;
   const ring = ringRef.current;
-  if (!cursor || !ring) return;  // ← just return silently, don't crash
+  if (!cursor || !ring) return;
 
   let mx = 0, my = 0, rx = 0, ry = 0;
- document.addEventListener('mousemove', (e) => {
-  if (!cursor || !ring) return;
-  mx = e.clientX; my = e.clientY;
-  cursor.style.left = mx + 'px';
-  cursor.style.top = my + 'px';
-});
+  let animId;
+
+  const onMouseMove = (e) => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  };
+  document.addEventListener('mousemove', onMouseMove);
 
   (function animateRing() {
-    if (!ring) return;
     rx += (mx - rx) * 0.12;
     ry += (my - ry) * 0.12;
     ring.style.left = rx + 'px';
     ring.style.top = ry + 'px';
-    requestAnimationFrame(animateRing);
+    animId = requestAnimationFrame(animateRing);
   })();
-}, []);
+
+  return () => {
+    document.removeEventListener('mousemove', onMouseMove);
+    cancelAnimationFrame(animId);
+  };
+}, [mounted]);
 
   if (!mounted) return null;
 

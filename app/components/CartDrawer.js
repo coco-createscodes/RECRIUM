@@ -8,7 +8,7 @@ const EMAILJS_SERVICE_ID  = 'service_883sp4q';
 const EMAILJS_TEMPLATE_ID = 'template_9yhhw51';
 const EMAILJS_PUBLIC_KEY  = 'rnYu4fZUeYhu4XLwK';
 
-export default function CartDrawer({ darkMode }) {
+export default function CartDrawer() {
   const { items, removeItem, updateQty, clearCart, total, count, isOpen, setIsOpen } = useCart();
 
   const [view, setView] = useState('cart'); // 'cart' | 'checkout' | 'payment' | 'success'
@@ -16,9 +16,7 @@ export default function CartDrawer({ darkMode }) {
   const [form, setForm] = useState({ name: '', email: '', address: '', city: '', postal: '', country: '' });
   const [errors, setErrors] = useState({});
 
-  const t = darkMode
-    ? { bg: '#0e0e0e', border: 'rgba(255,255,255,0.08)', text: '#fff', sub: 'rgba(255,255,255,0.45)', input: '#181818', inputBorder: 'rgba(255,255,255,0.12)', overlay: 'rgba(0,0,0,0.7)', accent: '#c0c0c0' }
-    : { bg: '#f5f0e8', border: 'rgba(0,0,0,0.08)', text: '#0a0a0a', sub: 'rgba(0,0,0,0.45)', input: '#ece8e0', inputBorder: 'rgba(0,0,0,0.12)', overlay: 'rgba(0,0,0,0.4)', accent: '#4a4a4a' };
+  const t = { bg: '#f5f0e8', border: 'rgba(0,0,0,0.08)', text: '#0a0a0a', sub: 'rgba(0,0,0,0.45)', input: '#ece8e0', inputBorder: 'rgba(0,0,0,0.12)', overlay: 'rgba(0,0,0,0.4)', accent: '#4a4a4a' };
 
   const validate = () => {
     const e = {};
@@ -55,7 +53,8 @@ export default function CartDrawer({ darkMode }) {
       setView('payment');
     } catch (err) {
       console.error('EmailJS error:', err);
-      alert('Something went wrong. Please try again.');
+      const msg = err?.text || err?.message || JSON.stringify(err);
+      alert(`Order failed: ${msg}\n\nPlease check your EmailJS template variable names match exactly.`);
     } finally {
       setLoading(false);
     }
@@ -140,14 +139,14 @@ export default function CartDrawer({ darkMode }) {
 
           {/* ── CHECKOUT VIEW ── */}
           {view === 'checkout' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
               {[
-                { key: 'name',    label: 'Full Name',      placeholder: 'Jane Smith' },
-                { key: 'email',   label: 'Email Address',  placeholder: 'jane@example.com' },
-                { key: 'address', label: 'Street Address', placeholder: '123 Main St' },
-                { key: 'city',    label: 'City',           placeholder: 'Lagos' },
-                { key: 'postal',  label: 'Postal Code',    placeholder: '100001' },
-                { key: 'country', label: 'Country',        placeholder: 'Nigeria' },
+                { key: 'name',    label: 'Full Name',       placeholder: 'Your name' },
+                { key: 'email',   label: 'Email Address',   placeholder: 'your@email.com' },
+                { key: 'address', label: 'Street Address',  placeholder: 'Street address' },
+                { key: 'city',    label: 'City',            placeholder: 'City' },
+                { key: 'postal',  label: 'Postal Code',     placeholder: 'Postal code' },
+                { key: 'country', label: 'Country',         placeholder: 'Country' },
               ].map(({ key, label, placeholder }) => (
                 <div key={key}>
                   <label style={{ display: 'block', fontSize: '0.62rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: t.sub, marginBottom: '0.4rem' }}>{label}</label>

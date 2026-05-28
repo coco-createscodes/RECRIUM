@@ -5,73 +5,59 @@ import { useEffect, useState, useRef } from 'react';
 export default function Home() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
-  const [darkMode, setDarkMode] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-useEffect(() => {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'light') setDarkMode(false);
-  setMounted(true);
+  useEffect(() => {
+    setMounted(true);
 
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('hide');
-  }, 1800);
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hide');
+    }, 1800);
 
-  const logoWrap = document.querySelector('.logo-wrap');
-  window.addEventListener('scroll', () => {
-    const scrollY = window.scrollY;
-    const heroH = document.querySelector('.hero').offsetHeight;
-    const progress = Math.min(scrollY / heroH, 1);
-    logoWrap.style.transform = `translateY(${-progress * 80}px)`;
-    logoWrap.style.opacity = 1 - progress * 1.6;
-  });
-}, []);
+    const logoWrap = document.querySelector('.logo-wrap');
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      const heroH = document.querySelector('.hero').offsetHeight;
+      const progress = Math.min(scrollY / heroH, 1);
+      logoWrap.style.transform = `translateY(${-progress * 80}px)`;
+      logoWrap.style.opacity = 1 - progress * 1.6;
+    });
+  }, []);
 
-useEffect(() => {
-  if (!mounted) return;
+  useEffect(() => {
+    if (!mounted) return;
 
-  const cursor = cursorRef.current;
-  const ring = ringRef.current;
-  if (!cursor || !ring) return;
+    const cursor = cursorRef.current;
+    const ring = ringRef.current;
+    if (!cursor || !ring) return;
 
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  let animId;
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    let animId;
 
-  const onMouseMove = (e) => {
-    mx = e.clientX; my = e.clientY;
-    cursor.style.left = mx + 'px';
-    cursor.style.top = my + 'px';
-  };
-  document.addEventListener('mousemove', onMouseMove);
+    const onMouseMove = (e) => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    };
+    document.addEventListener('mousemove', onMouseMove);
 
-  (function animateRing() {
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.style.left = rx + 'px';
-    ring.style.top = ry + 'px';
-    animId = requestAnimationFrame(animateRing);
-  })();
+    (function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      animId = requestAnimationFrame(animateRing);
+    })();
 
-  return () => {
-    document.removeEventListener('mousemove', onMouseMove);
-    cancelAnimationFrame(animId);
-  };
-}, [mounted]);
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(animId);
+    };
+  }, [mounted]);
 
   if (!mounted) return null;
 
-  const dark = {
-    bg: '#0a0a0a',
-    text: '#ffffff',
-    heroBg: '#0a0a0a',
-    shopMaleBg: 'linear-gradient(135deg, #0d0d0d 0%, #1a1410 60%, #0a0a0a 100%)',
-    shopFemaleBg: 'linear-gradient(225deg, #0a0a0a 0%, #14100f 60%, #0d0d0d 100%)',
-    loaderBg: '#0a0a0a',
-    dividerBg: '#0a0a0a',
-    subText: 'rgba(255,255,255,0.4)',
-  };
-
-  const light = {
+  const theme = {
     bg: '#f5f0e8',
     text: '#0a0a0a',
     heroBg: '#f5f0e8',
@@ -82,8 +68,6 @@ useEffect(() => {
     subText: 'rgba(0,0,0,0.4)',
   };
 
-  const theme = darkMode ? dark : light;
-
   return (
     <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh', cursor: 'none' }}>
       <style>{`
@@ -92,13 +76,13 @@ useEffect(() => {
 
         .cursor {
           position: fixed; width: 10px; height: 10px;
-          background: ${darkMode ? '#ffffff' : '#0a0a0a'};
+          background: #0a0a0a;
           border-radius: 50%; pointer-events: none;
           z-index: 99999; transform: translate(-50%, -50%);
         }
         .cursor-ring {
           position: fixed; width: 36px; height: 36px;
-          border: 1px solid ${darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.3)'};
+          border: 1px solid rgba(0,0,0,0.3);
           border-radius: 50%; pointer-events: none;
           z-index: 99998; transform: translate(-50%, -50%);
         }
@@ -149,7 +133,7 @@ useEffect(() => {
           display: flex; flex-direction: column; align-items: center;
           gap: 0.5rem; opacity: 0; animation: fadeIn 1s 2s ease forwards; cursor: none;
         }
-        .scroll-hint span { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(128,128,128,0.6); }
+        .scroll-hint span { font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase; color: rgba(0,0,0,0.4); }
         .scroll-arrow {
           width: 1px; height: 50px;
           background: linear-gradient(to bottom, #4a4a4a, transparent);
@@ -201,8 +185,8 @@ useEffect(() => {
         .shop-section:hover .divider-label { opacity: 0; }
 
         .corner-deco { position: absolute; width: 40px; height: 40px; z-index: 6; pointer-events: none; }
-        .corner-deco.tl { top: 2rem; left: 2rem; border-top: 1px solid rgba(128,128,128,0.3); border-left: 1px solid rgba(128,128,128,0.3); }
-        .corner-deco.br { bottom: 2rem; right: 2rem; border-bottom: 1px solid rgba(128,128,128,0.3); border-right: 1px solid rgba(128,128,128,0.3); }
+        .corner-deco.tl { top: 2rem; left: 2rem; border-top: 1px solid rgba(0,0,0,0.15); border-left: 1px solid rgba(0,0,0,0.15); }
+        .corner-deco.br { bottom: 2rem; right: 2rem; border-bottom: 1px solid rgba(0,0,0,0.15); border-right: 1px solid rgba(0,0,0,0.15); }
         .shop-side::after {
           content: ''; position: absolute; top: -100%; left: -60%; width: 40%; height: 300%;
           background: linear-gradient(105deg, transparent 40%, rgba(90,90,90,0.06) 50%, transparent 60%);
@@ -217,18 +201,12 @@ useEffect(() => {
           transition: opacity 0.6s ease, visibility 0.6s ease;
         }
         #loader.hide { opacity: 0; visibility: hidden; }
-        .loader-bar { width: 120px; height: 1px; background: rgba(128,128,128,0.2); position: relative; overflow: hidden; }
+        .loader-bar { width: 120px; height: 1px; background: rgba(0,0,0,0.1); position: relative; overflow: hidden; }
         .loader-bar::after {
           content: ''; position: absolute; inset: 0; background: #4a4a4a;
           transform: translateX(-100%); animation: loadBar 1.4s 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         @keyframes loadBar { to { transform: translateX(0); } }
-
-        .bulb-btn {
-          position: fixed; top: 1.5rem; right: 2rem; z-index: 10000;
-          background: none; border: none; cursor: none; font-size: 1.5rem;
-          transform: rotate(180deg); line-height: 1; padding: 0;
-        }
 
         @media (max-width: 640px) {
           .shop-section { flex-direction: column; }
@@ -251,33 +229,24 @@ useEffect(() => {
         <div style={{ opacity: 0, animation: 'fadeIn 0.8s 0.3s ease forwards' }}>
           <img width="350" height="200" src="/images/rworded.png" alt="Recrium"
             onError={(e) => { e.target.style.display = 'none'; }}
-            style={{ filter: darkMode ? 'none' : 'invert(1)' }}
+            style={{ filter: 'invert(1)' }}
           />
         </div>
         <div className="loader-bar"></div>
       </div>
 
-      {/* Bulb toggle */}
-      <button className="bulb-btn" onClick={() => {
-        const next = !darkMode;
-        setDarkMode(next);
-        localStorage.setItem('theme', next ? 'dark' : 'light');
-      }}>
-        {darkMode ? '💡' : '🔦'}
-      </button>
-
       {/* Hero */}
       <section className="hero" id="hero" style={{ background: theme.heroBg }}>
         <div style={{ position: 'absolute', top: '1.5rem', left: '2rem', zIndex: 20 }}>
           <img src="/images/silverlogo.png" alt="Recrium"
-            style={{ width: '80px', height: 'auto', filter: darkMode ? 'none' : 'invert(1)' }} />
+            style={{ width: '80px', height: 'auto', filter: 'invert(1)' }} />
         </div>
         <div className="hero-glow"></div>
         <div className="hero-lines"></div>
         <div className="logo-wrap">
           <img className="logo-img" src="/images/rworldwide.png" alt="Recrium"
             onError={(e) => { e.target.style.display = 'none'; }}
-            style={{ filter: darkMode ? 'none' : 'invert(1)' }}
+            style={{ filter: 'invert(1)' }}
           />
           <div className="logo-text" style={{ display: 'none', color: theme.text }}>RECRIUM</div>
         </div>

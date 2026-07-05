@@ -2,7 +2,7 @@
 
 import { useCart } from './CartContext';
 
-export default function CartButton({ darkMode }) {
+export default function CartButton() {
   const { count, setIsOpen } = useCart();
 
   return (
@@ -15,7 +15,7 @@ export default function CartButton({ darkMode }) {
       }}
     >
       {/* Bag icon */}
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={darkMode ? '#ffffff' : '#0a0a0a'} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
         <line x1="3" y1="6" x2="21" y2="6"/>
         <path d="M16 10a4 4 0 01-8 0"/>
@@ -24,8 +24,8 @@ export default function CartButton({ darkMode }) {
         <span style={{
           position: 'absolute', top: '-6px', right: '-8px',
           width: '18px', height: '18px', borderRadius: '50%',
-          background: darkMode ? '#ffffff' : '#0a0a0a',
-          color: darkMode ? '#0a0a0a' : '#ffffff',
+          background: '#0a0a0a',
+          color: '#ffffff',
           fontSize: '0.55rem', fontFamily: 'Montserrat, sans-serif',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontWeight: 400, letterSpacing: 0,

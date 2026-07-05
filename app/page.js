@@ -10,18 +10,28 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
 
-    setTimeout(() => {
-      document.getElementById('loader').classList.add('hide');
+    const loaderTimeout = setTimeout(() => {
+      const loader = document.getElementById('loader');
+      if (loader) loader.classList.add('hide');
     }, 1800);
 
     const logoWrap = document.querySelector('.logo-wrap');
-    window.addEventListener('scroll', () => {
+    const hero = document.querySelector('.hero');
+
+    const onScroll = () => {
+      if (!logoWrap || !hero) return;
       const scrollY = window.scrollY;
-      const heroH = document.querySelector('.hero').offsetHeight;
+      const heroH = hero.offsetHeight;
       const progress = Math.min(scrollY / heroH, 1);
       logoWrap.style.transform = `translateY(${-progress * 80}px)`;
       logoWrap.style.opacity = 1 - progress * 1.6;
-    });
+    };
+    window.addEventListener('scroll', onScroll);
+
+    return () => {
+      clearTimeout(loaderTimeout);
+      window.removeEventListener('scroll', onScroll);
+    };
   }, []);
 
   useEffect(() => {

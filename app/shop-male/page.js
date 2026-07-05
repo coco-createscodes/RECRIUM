@@ -1,10 +1,8 @@
 ﻿'use client';
- 
+
 import Navbar from '../components/Navbar';
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import Footer from '../components/Footer';
-import ThemeToggle from '../components/ThemeToggle';
 import CartDrawer from '../components/CartDrawer';
 import CartButton from '../components/CartButton';
 import { useCart } from '../components/CartContext';
@@ -27,16 +25,13 @@ const PRODUCTS = [
 export default function ShopMale() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
-  const [darkMode, setDarkMode] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
   const [addedItems, setAddedItems] = useState({});
   const [activeProduct, setActiveProduct] = useState(null); // which product card is open
   const { addItem } = useCart();
- 
+
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') setDarkMode(false);
     setMounted(true);
   }, []);
 
@@ -71,7 +66,7 @@ export default function ShopMale() {
       el.addEventListener('mouseenter', onEnter);
       el.addEventListener('mouseleave', onLeave);
     });
- 
+
     return () => {
       document.removeEventListener('mousemove', onMouseMove);
       cancelAnimationFrame(animId);
@@ -86,17 +81,17 @@ export default function ShopMale() {
     setTimeout(() => setAddedItems(p => ({ ...p, [product.id]: false })), 1500);
     setActiveProduct(null);
   };
- 
+
   const theme = {
-    bg: darkMode ? '#0a0a0a' : '#f5f0e8',
-    text: darkMode ? '#ffffff' : '#0a0a0a',
-    navBg: darkMode ? 'rgba(10,10,10,0.95)' : 'rgba(245,240,232,0.95)',
-    footerBorder: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-    footerText: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.3)',
-    dim: darkMode ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)',
-    border: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-    card: darkMode ? '#111' : '#ece8e0',
-    sub: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)',
+    bg: '#f5f0e8',
+    text: '#0a0a0a',
+    navBg: 'rgba(245,240,232,0.95)',
+    footerBorder: 'rgba(0,0,0,0.1)',
+    footerText: 'rgba(0,0,0,0.3)',
+    dim: 'rgba(0,0,0,0.4)',
+    border: 'rgba(0,0,0,0.08)',
+    card: '#ece8e0',
+    sub: 'rgba(0,0,0,0.4)',
   };
 
   if (!mounted) return null;
@@ -201,10 +196,10 @@ export default function ShopMale() {
       <div className="cursor-ring" ref={ringRef}></div>
 
       {/* Cart */}
-      <CartDrawer darkMode={darkMode} />
-      <CartButton darkMode={darkMode} />
+      <CartDrawer />
+      <CartButton />
  
-      <Navbar section="Men" darkMode={darkMode} />
+      <Navbar section="Men" />
 
       <div className="page-hero">
         <img src="/images/silverlogo.png" alt="Recrium" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(500px, 60vw)', opacity: 0.06, zIndex: 1 }} />
@@ -290,8 +285,7 @@ export default function ShopMale() {
         ))}
       </div>
 
-      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-      <Footer switchLink="/shop-female" switchLabel="Switch to Women →" darkMode={darkMode} />
+      <Footer switchLink="/shop-female" switchLabel="Switch to Women →" />
     </div>
   );
 }

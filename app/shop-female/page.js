@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import ThemeToggle from '../components/ThemeToggle';
 import CartDrawer from '../components/CartDrawer';
 import CartButton from '../components/CartButton';
 import { useCart } from '../components/CartContext';
@@ -29,7 +28,6 @@ const PRODUCTS = [
 export default function ShopFemale() {
   const cursorRef = useRef(null);
   const ringRef = useRef(null);
-  const [darkMode, setDarkMode] = useState(true);
   const [mounted, setMounted] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState({});
   const [addedItems, setAddedItems] = useState({});
@@ -37,8 +35,6 @@ export default function ShopFemale() {
   const { addItem } = useCart();
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'light') setDarkMode(false);
     setMounted(true);
   }, []);
 
@@ -93,23 +89,23 @@ export default function ShopFemale() {
 
   return (
     <div style={{
-      background: darkMode ? '#0a0a0a' : '#f5f0e8',
-      color: darkMode ? '#ffffff' : '#0a0a0a',
+      background: '#f5f0e8',
+      color: '#0a0a0a',
       minHeight: '100vh',
       cursor: 'none',
     }}>
       <style>{`
-        :root { --bg: ${darkMode ? '#0a0a0a' : '#f5f0e8'}; }
+        :root { --bg: #f5f0e8; --gold: #c9a96e; }
         html { scroll-behavior: smooth; }
         body { background: transparent; color: inherit; font-family: 'Montserrat', sans-serif; font-weight: 200; overflow-x: hidden; cursor: none; }
 
-        .cursor { position: fixed; width: 10px; height: 10px; background: #ffffff; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); }
+        .cursor { position: fixed; width: 10px; height: 10px; background: #0a0a0a; border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); }
         .cursor-ring { position: fixed; width: 36px; height: 36px; border: 1px solid rgba(201,169,110,0.5); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.4s, height 0.4s, border-color 0.3s; }
         .cursor-ring.expand { width: 70px; height: 70px; border-color: var(--gold); }
 
         .page-hero { height: 55vh; display: flex; align-items: flex-end; padding: 3rem; position: relative; overflow: hidden; }
         .page-hero::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, var(--bg) 100%); z-index: 2; }
-        .hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-8deg); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(6rem, 18vw, 16rem); color: rgba(201,169,110,0.04); white-space: nowrap; z-index: 1; user-select: none; letter-spacing: 0.05em; }
+        .hero-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-8deg); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(6rem, 18vw, 16rem); color: rgba(201,169,110,0.08); white-space: nowrap; z-index: 1; user-select: none; letter-spacing: 0.05em; }
         .page-hero-content { position: relative; z-index: 3; }
         .page-title { font-family: 'Bebas Neue', cursive; font-size: clamp(3.5rem, 10vw, 8rem); letter-spacing: 0.1em; line-height: 0.9; }
         .page-subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: clamp(0.9rem, 2vw, 1.15rem); color: var(--gold); letter-spacing: 0.3em; margin-top: 0.8rem; }
@@ -117,7 +113,7 @@ export default function ShopFemale() {
         .lookbook { padding: 3rem; }
 
         .look-feature { width: 100%; margin-bottom: 1.2rem; position: relative; overflow: hidden; display: block; text-decoration: none; cursor: none; }
-        .look-feature img { width: 100%; height: 65vh; object-fit: cover; display: block; transition: transform 0.9s cubic-bezier(0.16,1,0.3,1), filter 0.5s; filter: brightness(0.88); }
+        .look-feature img { width: 100%; height: 65vh; object-fit: cover; display: block; transition: transform 0.9s cubic-bezier(0.16,1,0.3,1), filter 0.5s; filter: brightness(0.92); }
         .look-feature:hover img { transform: scale(1.03); filter: brightness(1); }
         .look-feature::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); transition: width 0.4s, height 0.4s; z-index: 5; }
         .look-feature:hover::before { width: 40px; height: 40px; }
@@ -129,7 +125,7 @@ export default function ShopFemale() {
         .look-item { break-inside: avoid; margin-bottom: 1.2rem; position: relative; overflow: hidden; cursor: none; display: block; text-decoration: none; }
         .look-item:nth-child(3n+2) { margin-top: 4rem; }
         .look-item:nth-child(3n+3) { margin-top: -2rem; }
-        .look-item img { width: 100%; height: auto; display: block; transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.5s; filter: brightness(0.9); }
+        .look-item img { width: 100%; height: auto; display: block; transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.5s; filter: brightness(0.94); }
         .look-item:hover img { transform: scale(1.05); filter: brightness(1.05); }
 
         .look-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 55%); opacity: 0; transition: opacity 0.5s; display: flex; flex-direction: column; justify-content: flex-end; padding: 1.2rem; }
@@ -139,10 +135,10 @@ export default function ShopFemale() {
         .look-item::before { content: ''; position: absolute; top: 0; left: 0; width: 0; height: 0; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); transition: width 0.4s, height 0.4s; z-index: 5; }
         .look-item:hover::before { width: 30px; height: 30px; }
 
-        .look-placeholder { background: rgba(255,255,255,0.03); border: 1px dashed rgba(201,169,110,0.15); aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.8rem; }
+        .look-placeholder { background: rgba(90,90,90,0.05); border: 1px dashed rgba(201,169,110,0.3); aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.8rem; }
         .look-placeholder.wide { aspect-ratio: 16/7; }
-        .ph-icon { font-size: 2rem; opacity: 0.15; }
-        .ph-text { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(255,255,255,0.2); }
+        .ph-icon { font-size: 2rem; opacity: 0.2; color: #0a0a0a; }
+        .ph-text { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(0,0,0,0.35); }
 
         .look-item, .look-feature { opacity: 0; transform: translateY(30px); animation: itemReveal 0.7s ease forwards; }
         .look-feature { animation-delay: 0.05s; }
@@ -167,10 +163,10 @@ export default function ShopFemale() {
       <div className="cursor-ring" ref={ringRef}></div>
 
       {/* Cart */}
-      <CartDrawer darkMode={darkMode} />
-      <CartButton darkMode={darkMode} />
+      <CartDrawer />
+      <CartButton />
 
-      <Navbar section="Women" darkMode={darkMode} />
+      <Navbar section="Women" />
 
       <div className="page-hero">
         <img src="/images/silverlogo.png" alt="Recrium" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 'min(500px, 60vw)', opacity: 0.06, zIndex: 1 }} />
@@ -283,8 +279,7 @@ export default function ShopFemale() {
         </div>
       </div>
 
-      <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
-      <Footer switchLink="/shop-male" switchLabel="Switch to Men →" darkMode={darkMode} />
+      <Footer switchLink="/shop-male" switchLabel="Switch to Men →" />
     </div>
   );
 }

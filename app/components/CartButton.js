@@ -9,7 +9,7 @@ export default function CartButton() {
     <button
       onClick={() => setIsOpen(true)}
       style={{
-        position: 'fixed', top: '1.5rem', right: '5.5rem', zIndex: 10000,
+        position: 'fixed', top: '1.5rem', right: '3rem', zIndex: 10000,
         background: 'none', border: 'none', cursor: 'none',
         display: 'flex', alignItems: 'center', gap: '0.5rem',
       }}

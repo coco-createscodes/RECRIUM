@@ -3,18 +3,33 @@
 import { useState } from 'react';
 import { useCart } from './CartContext';
 import emailjs from '@emailjs/browser';
+import { createClient } from '@supabase/supabase-js';
 
 const EMAILJS_SERVICE_ID  = 'service_883sp4q';
-const EMAILJS_TEMPLATE_ID = 'template_9yhhw51';
+const EMAILJS_TEMPLATE_ID = 'template_u0hs6or';
 const EMAILJS_PUBLIC_KEY  = 'rnYu4fZUeYhu4XLwK';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+// Generates a short, human-readable order reference like REC-4F9K2
+function generateOrderRef() {
+  const chars = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'; // no 0/O/1/I to avoid confusion
+  let code = '';
+  for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return `REC-${code}`;
+}
 
 export default function CartDrawer() {
   const { items, removeItem, updateQty, clearCart, total, count, isOpen, setIsOpen } = useCart();
 
   const [view, setView] = useState('cart'); // 'cart' | 'checkout' | 'payment' | 'success'
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', address: '', city: '', postal: '', country: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '', city: '', postal: '', country: '' });
   const [errors, setErrors] = useState({});
+  const [orderRef, setOrderRef] = useState('');
 
   const t = { bg: '#f5f0e8', border: 'rgba(0,0,0,0.08)', text: '#0a0a0a', sub: 'rgba(0,0,0,0.45)', input: '#ece8e0', inputBorder: 'rgba(0,0,0,0.12)', overlay: 'rgba(0,0,0,0.4)', accent: '#4a4a4a' };
 
@@ -22,6 +37,7 @@ export default function CartDrawer() {
     const e = {};
     if (!form.name.trim()) e.name = 'Required';
     if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
+    if (!form.phone.trim()) e.phone = 'Required';
     if (!form.address.trim()) e.address = 'Required';
     if (!form.city.trim()) e.city = 'Required';
     if (!form.postal.trim()) e.postal = 'Required';
@@ -33,28 +49,58 @@ export default function CartDrawer() {
   const handleSubmit = async () => {
     if (!validate()) return;
     setLoading(true);
+    const ref = generateOrderRef();
     const orderLines = items.map(i => `${i.name} (${i.size}) x${i.qty} — ₦${(i.price * i.qty).toFixed(2)}`).join('\n');
+
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          customer_name:    form.name,
-          customer_email:   form.email,
-          shipping_address: `${form.address}, ${form.city}, ${form.postal}, ${form.country}`,
-          order_summary:    orderLines,
-          order_total:      `₦${total.toFixed(2)}`,
-          delivery_fee:     'To be confirmed',
-          grand_total:      'To be confirmed',
-          order_date:       new Date().toLocaleString(),
-        },
-        EMAILJS_PUBLIC_KEY
-      );
+      // 1. Save the order to Supabase first — this is our source of truth,
+      // independent of whether the email succeeds.
+      const { error: dbError } = await supabase.from('orders').insert({
+        order_ref: ref,
+        customer_name: form.name,
+        customer_phone: form.phone,
+        customer_email: form.email,
+        delivery_address: `${form.address}, ${form.city}, ${form.postal}, ${form.country}`,
+        items: items.map(i => ({ id: i.id, name: i.name, size: i.size, qty: i.qty, price: i.price })),
+        total: total,
+      });
+
+      if (dbError) {
+        console.error('Supabase insert error:', dbError);
+        alert(`Order failed to save: ${dbError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Send the notification email (best-effort — order is already saved either way)
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            order_ref:         ref,
+            customer_name:     form.name,
+            customer_email:    form.email,
+            customer_phone:    form.phone,
+            shipping_address:  `${form.address}, ${form.city}, ${form.postal}, ${form.country}`,
+            order_summary:     orderLines,
+            order_total:       `₦${total.toFixed(2)}`,
+            delivery_fee:      'To be confirmed',
+            grand_total:       'To be confirmed',
+            order_date:        new Date().toLocaleString(),
+          },
+          EMAILJS_PUBLIC_KEY
+        );
+      } catch (emailErr) {
+        // Don't block the customer — the order is safely in Supabase regardless.
+        console.error('EmailJS error (order still saved):', emailErr);
+      }
+
+      setOrderRef(ref);
       setView('payment');
     } catch (err) {
-      console.error('EmailJS error:', err);
-      const msg = err?.text || err?.message || JSON.stringify(err);
-      alert(`Order failed: ${msg}\n\nPlease check your EmailJS template variable names match exactly.`);
+      console.error('Checkout error:', err);
+      alert('Something went wrong placing your order. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -143,6 +189,7 @@ export default function CartDrawer() {
               {[
                 { key: 'name',    label: 'Full Name',       placeholder: 'Your name' },
                 { key: 'email',   label: 'Email Address',   placeholder: 'your@email.com' },
+                { key: 'phone',   label: 'Phone Number',    placeholder: 'e.g. 08012345678' },
                 { key: 'address', label: 'Street Address',  placeholder: 'Street address' },
                 { key: 'city',    label: 'City',            placeholder: 'City' },
                 { key: 'postal',  label: 'Postal Code',     placeholder: 'Postal code' },
@@ -184,6 +231,13 @@ export default function CartDrawer() {
                 Your order has been received. Please complete payment using the details below.
               </div>
 
+              {/* Order reference */}
+              <div style={{ border: `1px solid ${t.accent}`, padding: '1rem 1.5rem', background: t.input, textAlign: 'center' }}>
+                <div style={{ fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: t.sub, marginBottom: '0.4rem' }}>Your Order Reference</div>
+                <div style={{ fontSize: '1.3rem', letterSpacing: '0.15em', fontFamily: 'Bebas Neue, cursive', color: t.text }}>{orderRef}</div>
+                <div style={{ fontSize: '0.62rem', color: t.sub, marginTop: '0.4rem' }}>Please include this in your Instagram DM</div>
+              </div>
+
               {/* Account details box */}
               <div style={{ border: `1px solid ${t.border}`, padding: '1.5rem', background: t.input }}>
                 <div style={{ fontSize: '0.6rem', letterSpacing: '0.35em', textTransform: 'uppercase', color: t.sub, marginBottom: '1.2rem' }}>Bank Transfer</div>
@@ -219,7 +273,7 @@ export default function CartDrawer() {
                   </a>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: t.sub, marginTop: '0.8rem', lineHeight: 1.6 }}>
-                  DM us your payment screenshot and order details. We'll confirm and process your order within 24 hours.
+                  DM us your payment screenshot along with order <strong>{orderRef}</strong>. We'll confirm and process your order within 24 hours.
                 </div>
               </div>
             </div>

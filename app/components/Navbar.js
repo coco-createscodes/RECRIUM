@@ -17,13 +17,6 @@ export default function Navbar({ section }) {
       }}>
         ← Back
       </Link>
-
-      <span style={{
-        fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic',
-        fontSize: '1rem', color: '#4a4a4a', letterSpacing: '0.2em'
-      }}>
-        {section}
-      </span>
     </nav>
   );
 }
